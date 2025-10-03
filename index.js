@@ -24,6 +24,17 @@ const STEAM_CACHE_DURATION = 1000 * 60 * 60;
 const cooldowns = new Map();
 const COOLDOWN_TIME = 3000;
 
+/* Utility: truncates and formats text as a blockquote (adds leading '> ' per line) */
+function formatAsBlockquote(text, maxLen = 600) {
+  if (!text) return "";
+  let t = String(text).replace(/\r\n?/g, '\n');
+  if (t.length > maxLen) {
+    t = t.slice(0, maxLen) + '...';
+  }
+  // prefix each line with '> '
+  return '> ' + t.split('\n').join('\n> ');
+}
+
 /* <!--> CHARGEMENT LISTE STEAM <--> */
 async function getSteamAppList() {
   const now = Date.now();
@@ -149,7 +160,7 @@ function isNSFWSteamGame(data) {
           const end = start + pageSize;
 
           const embed = new EmbedBuilder()
-            .setTitle(`🎮・Wishlist de ${interaction.user.username} (page ${currentPage}/${maxPage})`)
+            .setTitle(`🎮・Wishlist de ${String(interaction.user.username).toUpperCase()} (page ${currentPage}/${maxPage})`)
             .setColor(0x0099ff)
             .setTimestamp();
 
@@ -167,7 +178,7 @@ function isNSFWSteamGame(data) {
               }
               embed.addFields({
                 name: `${star} ${game.name}`,
-                value: `[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`,
+                value: formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`),
                 inline: false
               });
               if (!thumbnailSet && info && info.success && info.data.header_image) {
@@ -177,7 +188,7 @@ function isNSFWSteamGame(data) {
             } catch (e) {
               embed.addFields({
                 name: game.name,
-                value: `[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`,
+                value: formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`),
                 inline: false
               });
             }
@@ -299,7 +310,7 @@ function isNSFWSteamGame(data) {
         const end = start + pageSize;
 
         const embed = new EmbedBuilder()
-          .setTitle(`🎮・Wishlist de ${targetUser.username} (page ${currentPage}/${maxPage})`)
+          .setTitle(`🎮・Wishlist de ${String(targetUser.username).toUpperCase()} (page ${currentPage}/${maxPage})`)
           .setColor(0x0099ff)
           .setTimestamp();
 
@@ -500,7 +511,7 @@ function isNSFWSteamGame(data) {
 
   /* <!--> AJOUT TRAILER <--> */
         if (trailerUrl) {
-          embed.addFields({ name: "🎬 Trailer", value: `[Voir le trailer](${trailerUrl})` });
+          embed.addFields({ name: "🎬 Trailer", value: formatAsBlockquote(`[Voir le trailer](${trailerUrl})`) });
         }
 
         await interaction.reply({ embeds: [embed] });
