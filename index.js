@@ -379,7 +379,7 @@ function isNSFWSteamGame(data) {
           .setTitle(found.name)
           .setURL(`https://store.steampowered.com/app/${found.appid}`)
           .setDescription(found.short_description || "*Pas de description.*")
-          .setThumbnail(found.header_image)
+          .setImage(found.header_image)
           .setColor(0x1b2838)
           .setTimestamp();
 
@@ -494,7 +494,8 @@ function isNSFWSteamGame(data) {
           .setTimestamp();
 
         if (data.header_image) {
-          embed.setThumbnail(data.header_image);
+          // Utiliser une image d'embed plus grande pour une meilleure visibilité
+          embed.setImage(data.header_image);
         }
 
   /* <!--> AJOUT TRAILER <--> */
