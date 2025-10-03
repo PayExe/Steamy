@@ -5,7 +5,11 @@ const { JSONFile } = require('lowdb/node');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const { searchSteamAppId } = require('./utils/searchSteamAppId');
 
-const token = process.env.TOKEN;
+const token = process.env.DISCORD_TOKEN || process.env.TOKEN;
+
+if (!token) {
+  console.warn('⚠️ Aucun token Discord détecté. Assure-toi d\'avoir défini DISCORD_TOKEN (ou TOKEN) dans ton fichier .env.');
+}
 
 /* <!--> PARAMÈTRES BOT <--> */
 const ALLOW_DLC = true;

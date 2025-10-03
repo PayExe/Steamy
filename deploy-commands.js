@@ -1,8 +1,12 @@
 require('dotenv').config();
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 
-const token = process.env.TOKEN;
+const token = process.env.DISCORD_TOKEN || process.env.TOKEN;
 const clientId = process.env.CLIENT_ID;
+
+if (!token) {
+  console.warn('⚠️ Aucun token Discord détecté. Assure-toi d\'avoir défini DISCORD_TOKEN (ou TOKEN) dans ton fichier .env.');
+}
 
 /* <!--> Liste complète des commandes avec autocomplétion <--> */
 const commands = [
