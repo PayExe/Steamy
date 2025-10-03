@@ -31,7 +31,7 @@ function formatAsBlockquote(text, maxLen = 600) {
   if (t.length > maxLen) {
     t = t.slice(0, maxLen) + '...';
   }
-  // prefix each line with '> '
+  // Use native Markdown blockquote '>' so Discord renders the grey bar on the left.
   return '> ' + t.split('\n').join('\n> ');
 }
 
@@ -165,7 +165,9 @@ function isNSFWSteamGame(data) {
             .setTimestamp();
 
           let thumbnailSet = false;
-
+          // Build a single description with blockquote lines so Discord shows a grey bar on the left
+          const descLines = [];
+          let idx = start + 1;
           for (const game of list.slice(start, end)) {
             let star = '';
             try {
@@ -176,22 +178,21 @@ function isNSFWSteamGame(data) {
                   star = '⭐️';
                 }
               }
-              embed.addFields({
-                name: `${star} ${game.name}`,
-                value: formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`),
-                inline: false
-              });
+              descLines.push(`**${idx}. ${star} ${game.name}**`);
+              descLines.push(formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`));
               if (!thumbnailSet && info && info.success && info.data.header_image) {
                 embed.setThumbnail(info.data.header_image);
                 thumbnailSet = true;
               }
             } catch (e) {
-              embed.addFields({
-                name: game.name,
-                value: formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`),
-                inline: false
-              });
+              descLines.push(`**${idx}. ${game.name}**`);
+              descLines.push(formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`));
             }
+            idx++;
+          }
+
+          if (descLines.length > 0) {
+            embed.setDescription(descLines.join('\n'));
           }
 
           const row = new ActionRowBuilder();
@@ -315,7 +316,8 @@ function isNSFWSteamGame(data) {
           .setTimestamp();
 
         let thumbnailSet = false;
-
+        const descLines = [];
+        let idx = start + 1;
         for (const game of list.slice(start, end)) {
           let star = '';
           try {
@@ -326,22 +328,21 @@ function isNSFWSteamGame(data) {
                 star = '⭐️';
               }
             }
-            embed.addFields({
-              name: `${star} ${game.name}`,
-              value: `[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`,
-              inline: false
-            });
+            descLines.push(`**${idx}. ${star} ${game.name}**`);
+            descLines.push(formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`));
             if (!thumbnailSet && info && info.success && info.data.header_image) {
               embed.setThumbnail(info.data.header_image);
               thumbnailSet = true;
             }
           } catch (e) {
-            embed.addFields({
-              name: game.name,
-              value: `[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`,
-              inline: false
-            });
+            descLines.push(`**${idx}. ${game.name}**`);
+            descLines.push(formatAsBlockquote(`[Voir sur Steam](https://store.steampowered.com/app/${game.appid})`));
           }
+          idx++;
+        }
+
+        if (descLines.length > 0) {
+          embed.setDescription(descLines.join('\n'));
         }
 
         const row = new ActionRowBuilder();
@@ -387,14 +388,16 @@ function isNSFWSteamGame(data) {
         if (!found) return await interaction.reply({ content: "❌ Impossible de trouver un jeu aléatoire pour le moment." });
 
         const embed = new EmbedBuilder()
-          .setTitle(found.name)
+          .setAuthor({ name: 'Steam', iconURL: 'attachment://STEAM.png' })
+          .setTitle(`**${String(found.name).toUpperCase()}**`)
           .setURL(`https://store.steampowered.com/app/${found.appid}`)
-          .setDescription(found.short_description || "*Pas de description.*")
+          // Use setDescription so the description sits directly under the title
+          .setDescription(formatAsBlockquote(found.short_description || "*Pas de description.*"))
           .setImage(found.header_image)
           .setColor(0x1b2838)
           .setTimestamp();
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed], files: [{ attachment: 'STEAM.png', name: 'STEAM.png' }] });
       }
 
   /* <!--> HELP <--> */
@@ -435,12 +438,12 @@ function isNSFWSteamGame(data) {
 
   /* <!--> EMOJIS TYPE <--> */
         const typeEmojis = {
-          game: "🎮",
-          dlc: "🧩",
-          demo: "🆓",
-          mod: "🛠️",
-          episode: "📺",
-          unknown: "❓"
+          game: "🎮・",
+          dlc: "🧩・",
+          demo: "🆓・",
+          mod: "🛠️・",
+          episode: "📺・",
+          unknown: "❓・"
         };
         const typeEmoji = typeEmojis[data.type] || typeEmojis.unknown;
 
@@ -454,6 +457,10 @@ function isNSFWSteamGame(data) {
             price += `  🔥 **-${data.price_overview.discount_percent}%**`;
           }
         }
+
+        // Indicate if the game/DLC is currently on sale: show a star and the discount percent next to the title
+        const isOnSale = data.price_overview && data.price_overview.discount_percent > 0;
+        const saleTag = isOnSale ? ` ⭐️ -${data.price_overview.discount_percent}%` : '';
 
   /* <!--> EVALUATIONS STEAM <--> */
         let review = "Non évalué";
@@ -493,15 +500,20 @@ function isNSFWSteamGame(data) {
         }
 
         const embed = new EmbedBuilder()
-          .setTitle(`${typeEmoji} ${data.name}`)
+          .setAuthor({ name: 'Steam', iconURL: 'attachment://STEAM.png' })
+          // append sale tag (star + percent) to the title when discounted
+          .setTitle(`**${typeEmoji} ${String(data.name).toUpperCase()}${saleTag}**`)
           .setURL(`https://store.steampowered.com/app/${appid}`)
-          .setDescription(data.short_description || "*Pas de description.*")
-          .setColor(0x1b2838)
+          // Use setDescription so there's no blank line between title and description
+          .setDescription(formatAsBlockquote(data.short_description || "*Pas de description.*"))
           .addFields(
+            // spacer to create one blank line between description and the inline fields
+            { name: '\u200b', value: '\u200b', inline: false },
             { name: "Prix", value: price, inline: true },
             { name: "Évaluations Steam", value: `${reviewEmoji} ${review}`, inline: true },
             { name: "Date de sortie", value: data.release_date?.date || "Inconnue", inline: true }
           )
+          .setColor(0x1b2838)
           .setTimestamp();
 
         if (data.header_image) {
@@ -511,10 +523,18 @@ function isNSFWSteamGame(data) {
 
   /* <!--> AJOUT TRAILER <--> */
         if (trailerUrl) {
-          embed.addFields({ name: "🎬 Trailer", value: formatAsBlockquote(`[Voir le trailer](${trailerUrl})`) });
+          // spacer non-inline to separate from the inline fields above
+          embed.addFields({ name: '\u200b', value: '\u200b', inline: false });
+          // create a centered row by using three inline fields: spacer, trailer, spacer
+          embed.addFields(
+            { name: '\u200b', value: '\u200b', inline: true },
+            // restore labelled link like before
+            { name: '🎬・Trailer・🎬', value: `[Voir le trailer](${trailerUrl})`, inline: true },
+            { name: '\u200b', value: '\u200b', inline: true }
+          );
         }
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed], files: [{ attachment: 'STEAM.png', name: 'STEAM.png' }] });
       }
     } catch (err) {
       console.error(`[${new Date().toLocaleString()}] Erreur pour ${interaction.user?.tag || "?"} (${interaction.user?.id || "?"}) :`, err);

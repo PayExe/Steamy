@@ -1,4 +1,4 @@
-feature:
+feature :
 - Comparateur instant gaming
 - faire un profil (création de badges, utilisation du bot)
 - faire une commande qui dis si NSFW autorisé ou pas (pour admin)
@@ -7,3 +7,9 @@ feature:
 - remettre les alertes en DM (a autorisé pour le compte perso)
 - remettre les alertes des jeux connus (a autorisé pour les admin)
 - faire un historique des commandes taper par les utilisateur des derniere 24h sous forme de pages (embed) pour les mods
+
+important :
+- structurer mon projet
+
+fix :
+- probleme de certain jeu qui sont pas trouver (marathon, silent hill f, RE requiem)
