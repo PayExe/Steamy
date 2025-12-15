@@ -451,11 +451,19 @@ function isNSFWSteamGame(data) {
         let price = "Non disponible";
         if (data.price_overview) {
           price = data.price_overview.final === 0
-            ? "🆓 Gratuit"
+            ? "Gratuit"
             : `💶 ${(data.price_overview.final / 100).toFixed(2)} €`;
           if (data.price_overview.discount_percent > 0) {
             price += `  🔥 **-${data.price_overview.discount_percent}%**`;
           }
+        } else if (data.is_free) {
+          // Fallback si price_overview est absent mais le jeu est marqué gratuit
+          price = "Gratuit";
+        } else if (data.free_weekend) {
+          price = "Gratuit (week-end)";
+        } else if (Array.isArray(data.categories) && data.categories.some(c => /Free to Play/i.test(c.description || ''))) {
+          // Autre fallback si la catégorie indique "Free to Play"
+          price = "Gratuit (Free to Play)";
         }
 
         // Indicate if the game/DLC is currently on sale: show a star and the discount percent next to the title
@@ -501,13 +509,10 @@ function isNSFWSteamGame(data) {
 
         const embed = new EmbedBuilder()
           .setAuthor({ name: 'Steam', iconURL: 'attachment://STEAM.png' })
-          // append sale tag (star + percent) to the title when discounted
           .setTitle(`**${typeEmoji} ${String(data.name).toUpperCase()}${saleTag}**`)
           .setURL(`https://store.steampowered.com/app/${appid}`)
-          // Use setDescription so there's no blank line between title and description
           .setDescription(formatAsBlockquote(data.short_description || "*Pas de description.*"))
           .addFields(
-            // spacer to create one blank line between description and the inline fields
             { name: '\u200b', value: '\u200b', inline: false },
             { name: "Prix", value: price, inline: true },
             { name: "Évaluations Steam", value: `${reviewEmoji} ${review}`, inline: true },
@@ -517,18 +522,14 @@ function isNSFWSteamGame(data) {
           .setTimestamp();
 
         if (data.header_image) {
-          // Utiliser une image d'embed plus grande pour une meilleure visibilité
           embed.setImage(data.header_image);
         }
 
   /* <!--> AJOUT TRAILER <--> */
         if (trailerUrl) {
-          // spacer non-inline to separate from the inline fields above
           embed.addFields({ name: '\u200b', value: '\u200b', inline: false });
-          // create a centered row by using three inline fields: spacer, trailer, spacer
           embed.addFields(
             { name: '\u200b', value: '\u200b', inline: true },
-            // restore labelled link like before
             { name: '🎬・Trailer・🎬', value: `[Voir le trailer](${trailerUrl})`, inline: true },
             { name: '\u200b', value: '\u200b', inline: true }
           );

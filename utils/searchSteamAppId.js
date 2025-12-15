@@ -15,7 +15,6 @@ async function fetchStoreSearch(term) {
     const url = 'https://store.steampowered.com/api/storesearch/?cc=US&l=english&term=' + encodeURIComponent(term);
     const res = await fetch(url, { headers: { 'User-Agent': 'node-fetch' } });
     const json = await res.json();
-    // storesearch historically returns either `items` or `apps`; be permissive
     const list = (json && (json.items || json.apps || json.results)) || [];
     return Array.isArray(list) ? list.map(item => ({
       appid: item.id || item.appid || item.app_id || item.appID || item.steam_appid,
@@ -34,7 +33,6 @@ async function searchSteamAppId(query) {
 
   const q = trimmed.toLowerCase();
 
-  // 1) Try the store search first — it's more up-to-date for new releases
   const storeCandidates = await fetchStoreSearch(trimmed);
   const storeExact = storeCandidates.find(a => a.name && a.name.toLowerCase() === q);
   if (storeExact && storeExact.appid) return String(storeExact.appid);
@@ -45,7 +43,6 @@ async function searchSteamAppId(query) {
   const storeIncludes = storeCandidates.find(a => a.name && a.name.toLowerCase().includes(q));
   if (storeIncludes && storeIncludes.appid) return String(storeIncludes.appid);
 
-  // 2) Fallback to the full app list (slower, may be stale)
   const apps = await fetchAppList();
   const candidates = apps.filter(a => a.name && a.name.length > 0).slice(0, 200000);
 
