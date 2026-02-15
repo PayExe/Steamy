@@ -1,2 +1,0 @@
-Lancer le bot : node index.js
-Vérifier si les commandes fonctionnent : node deploy-commands.js

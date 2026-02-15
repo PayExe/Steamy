@@ -27,17 +27,25 @@ Bot Discord perso qui connecte mon serveur a Steam. Wishlist, recherche de jeux,
 ## Structure
 
 ```
-index.js             Point d'entree, routing des commandes
-steam.js             API Steam (recherche, details, reviews, autocomplete)
-db.js                Base de donnees locale (lowdb)
-utils.js             Helpers partages
-deploy-commands.js   Enregistrement des slash commands
-commands/
-  wishlist.js        Ajout, suppression, affichage, pagination
-  library.js         Fiche detaillee d'un jeu
-  random.js          Jeu aleatoire
-  help.js            Commande d'aide
-  setchannel.js      Restriction par salon
+index.js                       Point d'entree (lance src/bot.js)
+src/
+  bot.js                       Client Discord, routing, events
+  steam.js                     API Steam (recherche, details, reviews, autocomplete)
+  db.js                        Base de donnees locale (lowdb)
+  utils.js                     Helpers partages
+  commands/
+    wishlist.js                Ajout, suppression, affichage, pagination
+    library.js                 Fiche detaillee d'un jeu
+    random.js                  Jeu aleatoire
+    help.js                    Commande d'aide
+    setchannel.js              Restriction par salon
+scripts/
+  deploy-commands.js           Enregistrement des slash commands Discord
+assets/
+  STEAM.png                    Icone du bot dans les embeds
+docs/
+  memo.txt                     Notes perso
+  checklist.txt                Idees de features
 ```
 
 ## Stack

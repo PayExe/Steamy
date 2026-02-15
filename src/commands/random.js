@@ -39,7 +39,7 @@ async function handle(interaction) {
     .setColor(0x1b2838)
     .setTimestamp();
 
-  interaction.reply({ embeds: [embed], files: [{ attachment: 'STEAM.png', name: 'STEAM.png' }] });
+  interaction.reply({ embeds: [embed], files: [{ attachment: 'assets/STEAM.png', name: 'STEAM.png' }] });
 }
 
 module.exports = { handle };

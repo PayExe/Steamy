@@ -80,7 +80,7 @@ async function handle(interaction) {
     );
   }
 
-  interaction.reply({ embeds: [embed], files: [{ attachment: 'STEAM.png', name: 'STEAM.png' }] });
+  interaction.reply({ embeds: [embed], files: [{ attachment: 'assets/STEAM.png', name: 'STEAM.png' }] });
 }
 
 async function autocomplete(interaction) {

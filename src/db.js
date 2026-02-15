@@ -1,7 +1,8 @@
+const path = require('path');
 const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
 
-const db = new Low(new JSONFile('db.json'), { wishlists: {}, channels: {} });
+const db = new Low(new JSONFile(path.join(__dirname, '..', 'db.json')), { wishlists: {}, channels: {} });
 
 const init = () => db.read();
 
