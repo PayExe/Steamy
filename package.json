@@ -12,9 +12,7 @@
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
     "lowdb": "^7.0.1",
-    "node-cron": "^4.0.5",
-    "node-fetch": "^3.3.2",
-    "throw": "^1.1.1"
+    "node-fetch": "^3.3.2"
   },
   "type": "commonjs"
 }
