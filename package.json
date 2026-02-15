@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "deploy": "node scripts/deploy-commands.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,7 +13,7 @@
   "dependencies": {
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
-    "lowdb": "^7.0.1",
+    "lowdb": "^5.1.0",
     "node-fetch": "^3.3.2"
   },
   "type": "commonjs"

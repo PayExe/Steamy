@@ -38,7 +38,9 @@ async function clearWishlist(userId) {
 
 async function getAllowedChannels(guildId) {
   await db.read();
-  return db.data.channels?.[guildId] || [];
+  const val = db.data.channels?.[guildId];
+  if (!val) return [];
+  return Array.isArray(val) ? val : [val];
 }
 
 async function toggleChannel(guildId, channelId) {

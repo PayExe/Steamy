@@ -1,6 +1,11 @@
+const { PermissionFlagsBits } = require('discord.js');
 const db = require('../db');
 
 async function set(interaction) {
+  if (!interaction.member.permissions.has(PermissionFlagsBits.ManageChannels)) {
+    return interaction.reply({ content: '❌ Tu dois avoir la permission **Gérer les salons** pour utiliser cette commande.', ephemeral: true });
+  }
+
   const channel = interaction.options.getChannel('salon');
 
   if (!channel) {
@@ -10,9 +15,9 @@ async function set(interaction) {
 
   const added = await db.toggleChannel(interaction.guild.id, channel.id);
   if (added) {
-    interaction.reply({ content: `✅ <#${channel.id}> ajouté aux salons autorisés.` });
+    await interaction.reply({ content: `✅ <#${channel.id}> ajouté aux salons autorisés.` });
   } else {
-    interaction.reply({ content: `🗑️ <#${channel.id}> retiré des salons autorisés.` });
+    await interaction.reply({ content: `🗑️ <#${channel.id}> retiré des salons autorisés.` });
   }
 }
 

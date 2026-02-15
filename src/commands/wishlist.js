@@ -68,7 +68,7 @@ async function add(interaction) {
 
   const ok = await db.addGame(interaction.user.id, name, appid);
   if (!ok) return interaction.reply({ content: '⚠️ Déjà dans ta wishlist.' });
-  interaction.reply({ content: `✅ **${name}** ajouté à ta wishlist.` });
+  await interaction.reply({ content: `✅ **${name}** ajouté à ta wishlist.` });
 }
 
 async function remove(interaction) {
@@ -77,7 +77,7 @@ async function remove(interaction) {
 
   const removed = await db.removeGame(interaction.user.id, name);
   if (!removed) return interaction.reply({ content: "❌ Ce jeu n'est pas dans ta wishlist." });
-  interaction.reply({ content: `🗑️ **${removed.name}** retiré.` });
+  await interaction.reply({ content: `🗑️ **${removed.name}** retiré.` });
 }
 
 async function show(interaction) {
@@ -88,12 +88,12 @@ async function show(interaction) {
   const pageNum = interaction.options.getInteger('page') || 1;
   const { embed, page, maxPage } = await buildPage(target.username, list, pageNum);
   const btns = paginationButtons(target.id, page, maxPage);
-  interaction.reply({ embeds: [embed], components: btns ? [btns] : [] });
+  await interaction.reply({ embeds: [embed], components: btns ? [btns] : [] });
 }
 
 async function clear(interaction) {
   await db.clearWishlist(interaction.user.id);
-  interaction.reply({ content: '🧹 Wishlist vidée.' });
+  await interaction.reply({ content: '🧹 Wishlist vidée.' });
 }
 
 async function onButton(interaction) {
@@ -104,7 +104,7 @@ async function onButton(interaction) {
   const list = await db.getWishlist(userId);
   const { embed, page, maxPage } = await buildPage(interaction.user.username, list, pageNum);
   const btns = paginationButtons(userId, page, maxPage);
-  interaction.update({ embeds: [embed], components: btns ? [btns] : [] });
+  await interaction.update({ embeds: [embed], components: btns ? [btns] : [] });
 }
 
 async function autocomplete(interaction) {
@@ -119,7 +119,7 @@ async function autocomplete(interaction) {
   }
 
   const choices = await steam.autocomplete(focused);
-  interaction.respond(choices);
+  await interaction.respond(choices);
 }
 
 module.exports = { add, remove, show, clear, onButton, autocomplete };

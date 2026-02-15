@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-function handle(interaction) {
+async function handle(interaction) {
   const embed = new EmbedBuilder()
     .setTitle('📖 Aide')
     .addFields(
@@ -15,7 +15,7 @@ function handle(interaction) {
     .setColor(0x7289DA)
     .setTimestamp();
 
-  interaction.reply({ embeds: [embed] });
+  await interaction.reply({ embeds: [embed] });
 }
 
 module.exports = { handle };

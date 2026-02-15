@@ -80,12 +80,12 @@ async function handle(interaction) {
     );
   }
 
-  interaction.reply({ embeds: [embed], files: [{ attachment: 'assets/STEAM.png', name: 'STEAM.png' }] });
+  await interaction.reply({ embeds: [embed], files: [{ attachment: 'assets/STEAM.png', name: 'STEAM.png' }] });
 }
 
 async function autocomplete(interaction) {
   const choices = await steam.autocomplete(interaction.options.getFocused());
-  interaction.respond(choices);
+  await interaction.respond(choices);
 }
 
 module.exports = { handle, autocomplete };
