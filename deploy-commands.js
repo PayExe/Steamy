@@ -37,6 +37,12 @@ const commands = [
   new SlashCommandBuilder()
     .setName('help')
     .setDescription('Affiche l\'aide du bot'),
+
+  new SlashCommandBuilder()
+    .setName('setchannel')
+    .setDescription('Restreint les commandes à un salon (laisser vide pour retirer)')
+    .setDefaultMemberPermissions(0x20)
+    .addChannelOption(o => o.setName('salon').setDescription('Salon autorisé').setRequired(false)),
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(token);

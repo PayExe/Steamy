@@ -1,27 +1,41 @@
 const { EmbedBuilder } = require('discord.js');
 const steam = require('../steam');
 const { bq } = require('../utils');
+const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
+
+async function getRandomPool() {
+  try {
+    const [featured, categories] = await Promise.all([
+      fetch('https://store.steampowered.com/api/featured/').then(r => r.json()),
+      fetch('https://store.steampowered.com/api/featuredcategories/').then(r => r.json()),
+    ]);
+
+    const pool = [];
+    for (const game of (featured.featured_win || [])) pool.push(game);
+    for (const key of ['specials', 'top_sellers', 'new_releases', 'coming_soon']) {
+      for (const game of (categories[key]?.items || [])) pool.push(game);
+    }
+    return pool.filter(g => g.id || g.appid);
+  } catch { return []; }
+}
 
 async function handle(interaction) {
-  const apps = await steam.getAppList();
+  const pool = await getRandomPool();
+  if (!pool.length) return interaction.reply({ content: '❌ Steam ne répond pas, réessaie plus tard.' });
 
-  let found = null;
-  for (let i = 0; i < 20 && !found; i++) {
-    const pick = apps[Math.floor(Math.random() * apps.length)];
-    const info = await steam.getAppDetails(pick.appid);
-    if (info?.success && info.data?.type === 'game') {
-      found = { ...info.data, appid: pick.appid };
-    }
-  }
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const appid = pick.id || pick.appid;
+  const info = await steam.getAppDetails(appid);
 
-  if (!found) return interaction.reply({ content: '❌ Pas trouvé de jeu aléatoire, réessaie.' });
+  if (!info?.success) return interaction.reply({ content: '❌ Pas de chance, réessaie.' });
+  const data = info.data;
 
   const embed = new EmbedBuilder()
     .setAuthor({ name: 'Steam', iconURL: 'attachment://STEAM.png' })
-    .setTitle(`**${found.name.toUpperCase()}**`)
-    .setURL(`https://store.steampowered.com/app/${found.appid}`)
-    .setDescription(bq(found.short_description || '*Pas de description.*'))
-    .setImage(found.header_image)
+    .setTitle(`**${data.name.toUpperCase()}**`)
+    .setURL(`https://store.steampowered.com/app/${appid}`)
+    .setDescription(bq(data.short_description || '*Pas de description.*'))
+    .setImage(data.header_image)
     .setColor(0x1b2838)
     .setTimestamp();
 

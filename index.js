@@ -5,6 +5,7 @@ const wishlist = require('./commands/wishlist');
 const library = require('./commands/library');
 const random = require('./commands/random');
 const help = require('./commands/help');
+const setchannel = require('./commands/setchannel');
 
 const token = process.env.DISCORD_TOKEN || process.env.TOKEN;
 if (!token) console.warn('⚠️ Token manquant, check ton .env');
@@ -39,6 +40,14 @@ const cooldowns = new Map();
       if (!interaction.isChatInputCommand()) return;
 
       console.log(`[${new Date().toLocaleString()}] ${interaction.user.tag} — /${interaction.commandName} (${interaction.guild?.name || 'DM'})`);
+
+      if (interaction.commandName === 'setchannel') return setchannel.set(interaction);
+
+      if (interaction.guild) {
+        const locked = await db.getLockedChannel(interaction.guild.id);
+        if (locked && interaction.channelId !== locked)
+          return interaction.reply({ content: `❌ Utilise les commandes dans <#${locked}>.`, ephemeral: true });
+      }
 
       const uid = interaction.user.id;
       const now = Date.now();

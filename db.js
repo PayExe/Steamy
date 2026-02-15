@@ -1,7 +1,7 @@
 const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
 
-const db = new Low(new JSONFile('db.json'), { wishlists: {} });
+const db = new Low(new JSONFile('db.json'), { wishlists: {}, channels: {} });
 
 const init = () => db.read();
 
@@ -35,4 +35,20 @@ async function clearWishlist(userId) {
   await db.write();
 }
 
-module.exports = { init, getWishlist, addGame, removeGame, clearWishlist };
+async function getLockedChannel(guildId) {
+  await db.read();
+  return db.data.channels?.[guildId] || null;
+}
+
+async function setLockedChannel(guildId, channelId) {
+  await db.read();
+  db.data.channels ||= {};
+  if (channelId) {
+    db.data.channels[guildId] = channelId;
+  } else {
+    delete db.data.channels[guildId];
+  }
+  await db.write();
+}
+
+module.exports = { init, getWishlist, addGame, removeGame, clearWishlist, getLockedChannel, setLockedChannel };
