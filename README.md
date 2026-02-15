@@ -1,6 +1,6 @@
 # Steamy
 
-Bot Discord qui connecte ton serveur a Steam. Wishlist, recherche de jeux, infos detaillees, jeux au hasard.
+Bot Discord perso qui connecte mon serveur a Steam. Wishlist, recherche de jeux, infos detaillees, jeux au hasard.
 
 ## Features
 
@@ -23,28 +23,6 @@ Bot Discord qui connecte ton serveur a Steam. Wishlist, recherche de jeux, infos
 | `/random-steam` | Un jeu au hasard |
 | `/setchannel [salon]` | Ajoute/retire un salon autorise (mods) |
 | `/help` | Aide |
-
-## Installation
-
-```bash
-git clone https://github.com/ton-user/Steamy.git
-cd Steamy
-npm install
-```
-
-Cree un fichier `.env` :
-
-```
-DISCORD_TOKEN=ton_token
-CLIENT_ID=ton_client_id
-```
-
-Deploie les commandes puis lance le bot :
-
-```bash
-node deploy-commands.js
-node index.js
-```
 
 ## Structure
 
