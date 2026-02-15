@@ -44,9 +44,11 @@ const cooldowns = new Map();
       if (interaction.commandName === 'setchannel') return setchannel.set(interaction);
 
       if (interaction.guild) {
-        const locked = await db.getLockedChannel(interaction.guild.id);
-        if (locked && interaction.channelId !== locked)
-          return interaction.reply({ content: `❌ Utilise les commandes dans <#${locked}>.`, ephemeral: true });
+        const allowed = await db.getAllowedChannels(interaction.guild.id);
+        if (allowed.length && !allowed.includes(interaction.channelId)) {
+          const list = allowed.map(id => `<#${id}>`).join(', ');
+          return interaction.reply({ content: `❌ Commandes autorisées uniquement dans : ${list}`, ephemeral: true });
+        }
       }
 
       const uid = interaction.user.id;

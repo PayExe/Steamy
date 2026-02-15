@@ -35,20 +35,33 @@ async function clearWishlist(userId) {
   await db.write();
 }
 
-async function getLockedChannel(guildId) {
+async function getAllowedChannels(guildId) {
   await db.read();
-  return db.data.channels?.[guildId] || null;
+  return db.data.channels?.[guildId] || [];
 }
 
-async function setLockedChannel(guildId, channelId) {
+async function toggleChannel(guildId, channelId) {
   await db.read();
   db.data.channels ||= {};
-  if (channelId) {
-    db.data.channels[guildId] = channelId;
+  const list = db.data.channels[guildId] ||= [];
+  const i = list.indexOf(channelId);
+  if (i === -1) {
+    list.push(channelId);
+    await db.write();
+    return true;
   } else {
-    delete db.data.channels[guildId];
+    list.splice(i, 1);
+    if (!list.length) delete db.data.channels[guildId];
+    await db.write();
+    return false;
   }
+}
+
+async function clearChannels(guildId) {
+  await db.read();
+  db.data.channels ||= {};
+  delete db.data.channels[guildId];
   await db.write();
 }
 
-module.exports = { init, getWishlist, addGame, removeGame, clearWishlist, getLockedChannel, setLockedChannel };
+module.exports = { init, getWishlist, addGame, removeGame, clearWishlist, getAllowedChannels, toggleChannel, clearChannels };

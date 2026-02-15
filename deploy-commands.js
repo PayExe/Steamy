@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { REST, Routes, SlashCommandBuilder } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder, ChannelType } = require('discord.js');
 
 const token = process.env.DISCORD_TOKEN || process.env.TOKEN;
 const clientId = process.env.CLIENT_ID;
@@ -42,7 +42,7 @@ const commands = [
     .setName('setchannel')
     .setDescription('Restreint les commandes à un salon (laisser vide pour retirer)')
     .setDefaultMemberPermissions(0x20)
-    .addChannelOption(o => o.setName('salon').setDescription('Salon autorisé').setRequired(false)),
+    .addChannelOption(o => o.setName('salon').setDescription('Salon autorisé').addChannelTypes(ChannelType.GuildText).setRequired(false)),
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(token);

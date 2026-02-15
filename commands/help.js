@@ -10,7 +10,7 @@ function handle(interaction) {
       { name: '/clearwishlist', value: 'Vide ta wishlist.' },
       { name: '/library-steam [jeu]', value: 'Infos détaillées sur un jeu.' },
       { name: '/random-steam', value: 'Un jeu au hasard.' },
-      { name: '/setchannel [salon]', value: 'Restreint les commandes à un salon (mods).' },
+      { name: '/setchannel [salon]', value: 'Ajoute/retire un salon autorisé (mods). Sans argument = reset.' },
     )
     .setColor(0x7289DA)
     .setTimestamp();
