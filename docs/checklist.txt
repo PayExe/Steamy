@@ -5,11 +5,5 @@ feature :
 - un message de welcome, avec explication
 - faire en sorte qu'on puisse utilisé les commandes sur 1 salon prédéfinis par les mods
 - remettre les alertes en DM (a autorisé pour le compte perso)
-- remettre les alertes des jeux connus (a autorisé pour les admin)
+- remettre les alertes des jeux connus qui sont populaire (a autorisé pour les admin)
 - faire un historique des commandes taper par les utilisateur des derniere 24h sous forme de pages (embed) pour les mods
-
-important :
-- structurer mon projet
-
-fix :
-- probleme de certain jeu qui sont pas trouver (marathon, silent hill f, RE requiem)
