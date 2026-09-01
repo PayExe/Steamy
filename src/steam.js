@@ -101,10 +101,10 @@ async function searchAppId(query) {
   return appPartial ? String(appPartial.appid) : null;
 }
 
-async function autocomplete(focused) {
-  if (!focused || focused.length < 2) return [];
+async function searchGames(term) {
+  if (!term || typeof term !== 'string') return [];
 
-  const storeResults = await storeSearch(focused);
+  const storeResults = await storeSearch(term);
   if (storeResults.length) {
     const seen = new Set();
     return storeResults
@@ -114,23 +114,23 @@ async function autocomplete(focused) {
         return true;
       })
       .slice(0, 25)
-      .map(a => ({ name: a.name, value: a.name }));
+      .map(a => ({ name: a.name, appid: String(a.appid) }));
   }
 
   const apps = await getAppList();
   if (!apps.length) return [];
-  
-  const q = focused.toLowerCase();
-  let results = apps.filter(a => 
-    a.name && 
-    a.name.length <= LIMITS.NAME_LENGTH && 
+
+  const q = term.toLowerCase();
+  let results = apps.filter(a =>
+    a.name &&
+    a.name.length <= LIMITS.NAME_LENGTH &&
     a.name.toLowerCase().includes(q)
   );
 
   results.sort((a, b) => {
     const al = a.name.toLowerCase();
     const bl = b.name.toLowerCase();
-    
+
     if (al === q) return -1;
     if (bl === q) return 1;
     if (al.startsWith(q) && !bl.startsWith(q)) return -1;
@@ -146,13 +146,19 @@ async function autocomplete(focused) {
       return true;
     })
     .slice(0, 25)
-    .map(a => ({ name: a.name, value: a.name }));
+    .map(a => ({ name: a.name, appid: String(a.appid) }));
 }
 
-module.exports = { 
-  getAppList, 
-  getAppDetails, 
-  getReviews, 
-  searchAppId, 
-  autocomplete 
+async function autocomplete(focused) {
+  const games = await searchGames(focused);
+  return games.map(a => ({ name: a.name, value: a.name }));
+}
+
+module.exports = {
+  getAppList,
+  getAppDetails,
+  getReviews,
+  searchAppId,
+  searchGames,
+  autocomplete
 };
