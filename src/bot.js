@@ -138,17 +138,19 @@ async function checkAndNotifyPriceDrops(client) {
     const allUserConfigs = await db.getAllUserNotificationConfigs();
     const now = new Date();
     const currentHour = now.getHours();
-    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-
     for (const [userId, wishlist] of Object.entries(allWishlists)) {
       const config = allUserConfigs[userId] || { hour: 20, interval: 1, lastSent: null };
 
       // Vérifier si c'est le bon moment pour cet utilisateur
       if (currentHour !== config.hour) continue;
       
-      // Vérifier la fréquence (jour du cycle)
-      const cycleDay = currentDay % config.interval;
-      if (cycleDay !== 0) continue;
+      // Vérifier la fréquence (tous les N jours)
+      if (config.interval > 1 && config.lastSent) {
+        const lastDate = new Date(config.lastSent);
+        const diffMs = now - lastDate;
+        const diffDays = Math.floor(diffMs / 86400000);
+        if (diffDays < config.interval) continue;
+      }
       
       // Vérifier qu'on n'a pas déjà envoyé aujourd'hui
       const today = new Date().toDateString();
