@@ -4,7 +4,7 @@ const { JSONFile } = require('lowdb/node');
 
 const db = new Low(
   new JSONFile(path.join(__dirname, '..', 'db.json')), 
-  { wishlists: {}, channels: {} }
+  { wishlists: {}, channels: {}, userAlerts: {}, adminAlerts: {}, dailyAlerts: {}, userNotificationConfig: {} }
 );
 
 const init = () => db.read();
@@ -77,6 +77,84 @@ async function clearChannels(guildId) {
   await db.write();
 }
 
+async function getUserAlerts(userId) {
+  await db.read();
+  return db.data.userAlerts[userId] || [];
+}
+
+async function saveUserAlerts(userId, alerts) {
+  await db.read();
+  db.data.userAlerts ||= {};
+  db.data.userAlerts[userId] = alerts;
+  await db.write();
+}
+
+async function getAdminAlerts(guildId) {
+  await db.read();
+  return db.data.adminAlerts[guildId] || [];
+}
+
+async function saveAdminAlerts(guildId, alerts) {
+  await db.read();
+  db.data.adminAlerts ||= {};
+  db.data.adminAlerts[guildId] = alerts;
+  await db.write();
+}
+
+async function getAllUserAlerts() {
+  await db.read();
+  return db.data.userAlerts || {};
+}
+
+async function getAllAdminAlerts() {
+  await db.read();
+  return db.data.adminAlerts || {};
+}
+
+async function getDailyAlertChannels(guildId) {
+  await db.read();
+  return db.data.dailyAlerts?.[guildId] || [];
+}
+
+async function setDailyAlertChannel(guildId, channelId) {
+  await db.read();
+  db.data.dailyAlerts ||= {};
+  const channels = db.data.dailyAlerts[guildId] ||= [];
+  
+  const index = channels.indexOf(channelId);
+  if (index === -1) {
+    channels.push(channelId);
+  } else {
+    channels.splice(index, 1);
+    if (!channels.length) delete db.data.dailyAlerts[guildId];
+  }
+  
+  await db.write();
+  return index === -1;
+}
+
+async function getAllDailyAlerts() {
+  await db.read();
+  return db.data.dailyAlerts || {};
+}
+
+async function getUserNotificationConfig(userId) {
+  await db.read();
+  return db.data.userNotificationConfig?.[userId] || { hour: 20, interval: 1 };
+}
+
+async function setUserNotificationConfig(userId, config) {
+  await db.read();
+  db.data.userNotificationConfig ||= {};
+  db.data.userNotificationConfig[userId] = config;
+  await db.write();
+}
+
+async function getAllUserNotificationConfigs() {
+  await db.read();
+  return db.data.userNotificationConfig || {};
+}
+
 module.exports = {
   init,
   getWishlist,
@@ -86,4 +164,16 @@ module.exports = {
   getAllowedChannels,
   toggleChannel,
   clearChannels,
+  getUserAlerts,
+  saveUserAlerts,
+  getAdminAlerts,
+  saveAdminAlerts,
+  getAllUserAlerts,
+  getAllAdminAlerts,
+  getDailyAlertChannels,
+  setDailyAlertChannel,
+  getAllDailyAlerts,
+  getUserNotificationConfig,
+  setUserNotificationConfig,
+  getAllUserNotificationConfigs,
 };

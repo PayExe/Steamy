@@ -7,7 +7,7 @@ async function handle(interaction) {
     .addFields(
       {
         name: '/addwishlist [jeu]',
-        value: 'Ajoute un jeu à ta wishlist.',
+        value: 'Ajoute un jeu à ta wishlist et active les alertes de prix (DM).',
         inline: false,
       },
       {
@@ -38,6 +38,21 @@ async function handle(interaction) {
       {
         name: '/setchannel [salon]',
         value: 'Ajoute/retire un salon autorisé (mods). Sans argument = reset.',
+        inline: false,
+      },
+      {
+        name: '/adminalerts add/remove/list [jeu]',
+        value: 'Gère les alertes serveur (admin seulement).',
+        inline: false,
+      },
+      {
+        name: '/dailyalert [salon]',
+        value: 'Active/désactive les alertes quotidiennes à 20h dans un salon (admin).',
+        inline: false,
+      },
+      {
+        name: '/notifconfig [heure] [frequence]',
+        value: 'Configure quand recevoir les alertes (0-23h, 1-7 jours).',
         inline: false,
       },
     )

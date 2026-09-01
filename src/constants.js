@@ -36,6 +36,11 @@ const EMOJIS = {
   NEGATIVE: '👎',
   VERY_NEGATIVE: '💩',
   OVERWHELMINGLY_POSITIVE: '🌟',
+  BELL: '🔔',
+  BELL_OFF: '🔕',
+  CHART_DOWN: '📉',
+  ANNOUNCEMENT: '📢',
+  SHIELD: '🛡️',
 };
 
 const STEAM_TYPES = {
@@ -75,11 +80,14 @@ const PAGINATION = {
 const COOLDOWN = {
   COMMAND: 3000,
   CACHE_APPLIST: 3600000,
+  PRICE_CHECK: 3600000,
 };
 
 const LIMITS = {
   NAME_LENGTH: 100,
   DESCRIPTION_LENGTH: 600,
+  MAX_ALERTS_PER_USER: 50,
+  DISCOUNT_THRESHOLD: 5,
 };
 
 const COLORS = {
@@ -87,6 +95,8 @@ const COLORS = {
   STEAM: 0x1b2838,
   DISCORD: 0x7289DA,
   ERROR: 0xFF0000,
+  SUCCESS: 0x00FF00,
+  ALERT: 0xFFD700,
 };
 
 const STEAM_CONFIG = {
@@ -94,6 +104,17 @@ const STEAM_CONFIG = {
   COUNTRY_CODE_SEARCH: 'US',
   LANGUAGE: 'english',
   USER_AGENT: 'node-fetch',
+};
+
+const ALERT_TYPES = {
+  USER: 'user',
+  ADMIN: 'admin',
+};
+
+const ALERT_REASONS = {
+  PRICE_DROP: 'price_drop',
+  NEW_RELEASE: 'new_release',
+  BACK_IN_STOCK: 'back_in_stock',
 };
 
 module.exports = {
@@ -107,4 +128,6 @@ module.exports = {
   LIMITS,
   COLORS,
   STEAM_CONFIG,
+  ALERT_TYPES,
+  ALERT_REASONS,
 };
