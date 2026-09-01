@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, InteractionType } = require('discord.js');
+const cron = require('node-cron');
 const db = require('./db');
 const alerts = require('./alerts');
 const wishlist = require('./commands/wishlist');
@@ -137,14 +138,13 @@ async function checkAndNotifyPriceDrops(client) {
     const allUserConfigs = await db.getAllUserNotificationConfigs();
     const now = new Date();
     const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
     const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
 
     for (const [userId, wishlist] of Object.entries(allWishlists)) {
       const config = allUserConfigs[userId] || { hour: 20, interval: 1, lastSent: null };
-      
+
       // Vérifier si c'est le bon moment pour cet utilisateur
-      if (currentHour !== config.hour || currentMinute !== 0) continue;
+      if (currentHour !== config.hour) continue;
       
       // Vérifier la fréquence (jour du cycle)
       const cycleDay = currentDay % config.interval;
@@ -226,12 +226,6 @@ async function checkAndNotifyPriceDrops(client) {
 
 async function checkAndSendDailyAlerts(client) {
   try {
-    const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
-
-    if (hour !== 20 || minute !== 0) return;
-
     const allDailyAlerts = await db.getAllDailyAlerts();
     const allAdminAlerts = await alerts.getAllAdminAlerts();
 
@@ -285,13 +279,15 @@ async function checkAndSendDailyAlerts(client) {
   client.once('ready', () => {
     console.log(`${EMOJIS.SUCCESS} ${client.user.tag} est en ligne`);
 
-    setInterval(() => {
+    // Alertes utilisateur : chaque heure à la minute 0
+    cron.schedule('0 * * * *', () => {
       checkAndNotifyPriceDrops(client);
-    }, COOLDOWN.PRICE_CHECK);
+    });
 
-    setInterval(() => {
+    // Alertes quotidiennes serveur : tous les jours à 20h00
+    cron.schedule('0 20 * * *', () => {
       checkAndSendDailyAlerts(client);
-    }, 60000); // Vérifier chaque minute
+    });
   });
 
   client.on('guildCreate', (guild) => {
